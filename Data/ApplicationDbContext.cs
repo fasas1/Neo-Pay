@@ -1,6 +1,9 @@
-﻿namespace NeoPay.Data
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace NeoPay.Data
 {
-    public class ApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
+        public ApplicationDbContext(DbContextOptions option) : base(option) { }
     }
 }
