@@ -10,5 +10,8 @@
         public string Currency { get; set; } = "NGN";
         public DateTime CreatedAt { get; set; }
         public bool IsActive{ get; set; }
+
+        public ICollection<Transaction> TransactionsFrom { get; set; } = new List<Transaction>();
+        public ICollection<Transaction> TransactionsTo { get; set; } = new List<Transaction>();
     }
 }
