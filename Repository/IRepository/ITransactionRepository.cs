@@ -1,4 +1,6 @@
-﻿using System.Transactions;
+﻿
+
+using NeoPay.Entities;
 
 namespace NeoPay.Repository.IRepository
 {

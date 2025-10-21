@@ -1,6 +1,8 @@
-﻿using NeoPay.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using NeoPay.Data;
+using NeoPay.Entities;
 using NeoPay.Repository.IRepository;
-using System.Transactions;
+
 
 namespace NeoPay.Repository
 {
@@ -13,49 +15,65 @@ namespace NeoPay.Repository
             _db = db;  
         }
 
-        public Task<Transaction> AddAsync(Transaction entity)
+        public async Task<Transaction> AddAsync(Transaction entity)
         {
-            throw new NotImplementedException();
+           await _db.Transactions.AddAsync(entity);
+            await _db.SaveChangesAsync();
+            return entity;
+        } 
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var trnx = await _db.Transactions.FindAsync(id);
+            if (trnx == null) return false;
+
+            _db.Transactions.Remove(trnx);
+            await _db.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> ExistsAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _db.Transactions.AnyAsync(c => c.TransactionId == id);
+        }
+       public async Task<IEnumerable<Transaction>> GetAllAsync()
+        {
+            return await _db.Transactions.ToListAsync();
+        }
+        public async Task<Transaction?> GetByIdAsync(Guid id)
+        {
+            return await _db.Transactions.FindAsync(id);
+        }
+        public async Task<IEnumerable<Transaction>> GetTransactionFromWalletAsync(Guid walletId)
+        {
+             return await _db.Transactions
+                   .Include(t => t.FromWallet)
+                    .Where(t => t.FromWallet.WalletId == walletId)
+                   .ToListAsync();
+        }
+        public async Task<IEnumerable<Transaction>> GetTransactionToWalletAsync(Guid walletId)
+        {
+            return await _db.Transactions
+                    .Include(t => t.ToWallet)
+                    .Where(t  => t.ToWallet.WalletId == walletId)
+                    .ToListAsync();
+        }
+        public async Task<Transaction> GetTransactionWithDetailsAsync(Guid transactionId)
+        {
+             return await _db.Transactions
+                          .Include(t => t.FromWallet)
+                                .ThenInclude(w => w.User)
+                          .Include(t => t.ToWallet)
+                                .ThenInclude(w => w.User)
+                          .FirstOrDefaultAsync(t => t.TransactionId == transactionId);
+        }
+        public async Task<Transaction> UpdateAsync(Transaction entity)
+        {
+            _db.Transactions.Update(entity);
+            await _db.SaveChangesAsync();
+            return entity;
         }
 
-        public Task<bool> ExistsAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Transaction>> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Transaction?> GetByIdAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Transaction>> GetTransactionFromWalletAsync(Guid walletId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<Transaction>> GetTransactionToWalletAsync(Guid walletId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Transaction> GetTransactionWithDetailsAsync(Guid transactionId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Transaction> UpdateAsync(Transaction entity)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }
