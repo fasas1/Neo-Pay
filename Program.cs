@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using NeoPay;
 using NeoPay.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {

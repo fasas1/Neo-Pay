@@ -4,10 +4,10 @@ namespace NeoPay.Repository.IRepository
 {
     public interface IWalletRepository :IRepository<Wallet>
     {
-        Task<Wallet> GetWalletByNameAsync(string name);
+        Task<Wallet> GetWalletByNameAsync(string userId,string name);
         Task<IEnumerable<Wallet>> GetActiveWalletAsync();
         Task<IEnumerable<Wallet>> GetWalletsByUserAsync(string userId);
-
+        Task<IEnumerable<Wallet>> GetWalletsByUserInfoAsync(string userId);
 
     }
 }

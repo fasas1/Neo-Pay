@@ -72,8 +72,6 @@ namespace NeoPay.Repository
             _db.Transactions.Update(entity);
             await _db.SaveChangesAsync();
             return entity;
-        }
-
-      
+        }    
     }
 }

@@ -1,4 +1,5 @@
-﻿using NeoPay.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using NeoPay.Data;
 using NeoPay.Entities;
 using NeoPay.Repository.IRepository;
 
@@ -31,37 +32,51 @@ namespace NeoPay.Repository
         }
         public async Task<bool> ExistsAsync(Guid id)
         {
-               return await _db.Wallets.FindAsync(w => w.WalletId == id);
+               return await _db.Wallets.AnyAsync(w => w.WalletId == id);
         }
 
-        public Task<IEnumerable<Wallet>> GetActiveWalletAsync()
+        public async Task<IEnumerable<Wallet>> GetActiveWalletAsync()
         {
-            throw new NotImplementedException();
+            return await _db.Wallets
+                        .Where(w => w.IsActive)
+                        .ToListAsync();
         }
-
-        public Task<IEnumerable<Wallet>> GetAllAsync()
+        public async Task<IEnumerable<Wallet>> GetAllAsync()
         {
-            throw new NotImplementedException();
+              return await _db.Wallets.ToListAsync();
         }
-
-        public Task<Wallet?> GetByIdAsync(Guid id)
+        public async Task<Wallet?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _db.Wallets.FindAsync(id);
         }
-
-        public Task<Wallet> GetWalletByNameAsync(string name)
+        public async Task<Wallet> GetWalletByNameAsync(string userId,string name)
         {
-            throw new NotImplementedException();
+            return await _db.Wallets
+                .FirstOrDefaultAsync(w => w.UserId == userId && w.Name.ToLower() == name.ToLower());
         }
-
-        public Task<IEnumerable<Wallet>> GetWalletsByUserAsync(string userId)
+         public async Task<IEnumerable<Wallet>> GetWalletsByUserInfoAsync(string userId)
         {
-            throw new NotImplementedException();
+              return await _db.Wallets
+                         .Where (w => w.UserId == userId)
+                          .Include (w => w.User)
+                         .Include(w => w.TransactionsFrom)
+                         .Include(w => w.TransactionsTo)
+                         .ToListAsync();
         }
-
-        public Task<Wallet> UpdateAsync(Wallet entity)
+        public async Task<IEnumerable<Wallet>> GetWalletsByUserAsync(string userId)
         {
-            throw new NotImplementedException();
+              return await _db.Wallets
+                          .Where(w => w.UserId == userId)
+                          .Include(w => w.TransactionsFrom)
+                          .Include(w => w.TransactionsTo)
+                          .ToListAsync();
+        }
+       
+        public async Task<Wallet> UpdateAsync(Wallet entity)
+        {
+            _db.Wallets.Update(entity);
+            await _db.SaveChangesAsync();
+            return entity;
         }
     }
 }
