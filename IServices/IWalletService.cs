@@ -1,4 +1,5 @@
-﻿using NeoPay.Entities.Dtos;
+﻿using NeoPay.Entities;
+using NeoPay.Entities.Dtos;
 
 namespace NeoPay.Services
 {
@@ -7,5 +8,7 @@ namespace NeoPay.Services
         Task <IEnumerable<WalletDto>> GetAllWalletAsync();
         Task <WalletDto> CreateWallet(string userId, string walletName, string currency = "NGN");
         Task <IEnumerable<WalletDto>> GetUserWalletsAsync(string userId);
+        Task <WalletDto> GetWalletsByIdAsync(Guid walletId);
+        Task<WalletDto?> GetWalletByCurrencyAsync(string userId, string currency);
     }
 }

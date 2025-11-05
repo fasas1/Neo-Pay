@@ -1,4 +1,6 @@
-﻿using NeoPay.Entities.Dtos;
+﻿using AutoMapper;
+using NeoPay.Entities;
+using NeoPay.Entities.Dtos;
 using NeoPay.Repository.IRepository;
 
 namespace NeoPay.Services
@@ -6,9 +8,11 @@ namespace NeoPay.Services
     public class WalletService : IWalletService
     {
         private readonly IWalletRepository _walletRepo;
-        public WalletService(IWalletRepository walletRepo)
+        private readonly IMapper _mapper;
+        public WalletService(IWalletRepository walletRepo, IMapper mapper)
         {
             _walletRepo = walletRepo;
+            _mapper = mapper;
         }
         public async Task<WalletDto> CreateWallet(string userId, string walletName, string currency = "NGN")
         {
@@ -25,14 +29,31 @@ namespace NeoPay.Services
             return _mapper.Map<WalletDto>(newWallet);
         }
 
-        public Task<IEnumerable<WalletDto>> GetAllWalletAsync()
+        public async Task<IEnumerable<WalletDto>> GetAllWalletAsync()
         {
-            throw new NotImplementedException();
+           var wallets = await _walletRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<WalletDto>>(wallets);
+        }  
+        public async Task<IEnumerable<WalletDto>> GetUserWalletsAsync(string userId)
+        {
+            var wallets = await _walletRepo.GetWalletsByUserAsync(userId);
+            return _mapper.Map<IEnumerable<WalletDto>>(wallets);
         }
 
-        public Task<IEnumerable<WalletDto>> GetUserWalletsAsync(string userId)
+        public async Task<WalletDto?> GetWalletByCurrencyAsync(string userId, string currency)
         {
-            throw new NotImplementedException();
+                var wallet = await _walletRepo.GetWalletByCurrencyAsync(userId, currency);
+                    if(wallet == null)
+                     {
+                        return null;
+                      }
+                    return _mapper.Map<WalletDto>(wallet);
+        }
+
+        public async Task<WalletDto> GetWalletsByIdAsync(Guid walletId)
+        {
+            var wallet = await _walletRepo.GetWalletByIdAsync(walletId);
+                 return _mapper.Map<WalletDto>(wallet);
         }
     }
 }

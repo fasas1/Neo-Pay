@@ -17,16 +17,30 @@ namespace NeoPay.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Wallet <-> User (One-to-Many)
             modelBuilder.Entity<Wallet>()
-            .HasOne(w => w.User)
-            .WithMany(u => u.Wallets)
-            .HasForeignKey(w => w.UserId);
+                .HasOne(w => w.User)
+                .WithMany(u => u.Wallets)
+                .HasForeignKey(w => w.UserId);
 
-           modelBuilder.Entity<Wallet>()
-            .HasIndex(w => new { w.UserId, w.Currency })
-            .IsUnique();
+            modelBuilder.Entity<Wallet>()
+                .HasIndex(w => new { w.UserId, w.Currency })
+                .IsUnique();
 
+            // Transaction <-> Wallet (FromWallet)
+            modelBuilder.Entity<Transaction>()
+                .HasOne(t => t.FromWallet)
+                .WithMany(w => w.TransactionsFrom)
+                .HasForeignKey("FromWalletId")
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Transaction <-> Wallet (ToWallet)
+            modelBuilder.Entity<Transaction>()
+                .HasOne(t => t.ToWallet)
+                .WithMany(w => w.TransactionsTo)
+                .HasForeignKey("ToWalletId")
+                .OnDelete(DeleteBehavior.Restrict);
         }
+
     }
 }

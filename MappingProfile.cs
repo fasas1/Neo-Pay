@@ -11,6 +11,7 @@ namespace NeoPay
             CreateMap<Transaction, TransactionDto>().ReverseMap();
             CreateMap<Wallet, WalletDto>().ReverseMap();
             CreateMap<Wallet, CreateWalletDto>().ReverseMap();
+            CreateMap<ApplicationUser, RegistrationRequestDto>().ReverseMap();
         }
     }
 }

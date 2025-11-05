@@ -78,5 +78,19 @@ namespace NeoPay.Repository
             await _db.SaveChangesAsync();
             return entity;
         }
+
+        public async Task<Wallet> GetWalletByIdAsync(Guid walletId)
+        {
+            return await _db.Wallets
+                         .Include(w => w.TransactionsFrom)
+                         .Include(w => w.TransactionsTo)
+                         .FirstOrDefaultAsync(w => w.WalletId == walletId);
+        }
+
+        public async Task<Wallet?> GetWalletByCurrencyAsync(string userId, string currency)
+        {
+             return await _db.Wallets
+                          .FirstOrDefaultAsync(w => w.UserId == userId && w.Currency == currency && w.IsActive);
+        }
     }
 }

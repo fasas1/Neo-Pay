@@ -7,6 +7,8 @@ namespace NeoPay.Entities
     public class Transaction
     {
         public Guid TransactionId { get; set; }
+        public Guid? FromWalletId { get; set; }
+        public Guid? ToWalletId { get; set; }
         public Wallet FromWallet { get; set; }
         public Wallet ToWallet { get; set; }
         public TransactionType Type { get; set; }                                                                                                                                                
